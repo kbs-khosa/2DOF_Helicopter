@@ -6,6 +6,7 @@ G=tf(numG,denG);
 T=0.285;
 %Definition of G(s)
 sysG=c2d(G,T);
+
 % G(z)
 % roots: zero at -0.9730 & poles at 0.856+0.4356i,0.856-0.4356i
  
@@ -47,3 +48,74 @@ V=feedback(sysK,sysG);
 step(V);
 stepinfo(V)
 
+# Yaw Controller M-File
+numG=7.461;
+denG=[1  0.2701  0];
+T =0.285; 
+G = tf(numG,denG);
+%Definition of G(s) 
+Sys = c2d(G,T,’zoh’);
+% G(z)
+% roots: zero at -0.9746 & poles at 1 and 0.926
+ 
+% K(z)
+% roots: zero at 0.926 and 0.9346 & poles at 1 and -0.9746
+% Open loop transfer function G(z)*K(z)
+% roots: zero at 0.9346 & two poles at 1
+numSG=0.2954*[1 0.9746];
+denSG=[1 -1.926 0.926];
+numK=0.679*[1 -1.8606 0.8654];
+denK=[1 -0.0254 -0.9746];
+sysK=tf(numK,denK,T);
+OPnum=0.2*[1 -0.9346];
+OPden=[1 -2 1];
+OP=tf(OPnum,OPden,T);
+ 
+%Root locus plot
+rlocus(OP);
+ 
+%Open loop transfer function
+% roots: zero at 0.9346 & 2 poles at 1;
+CL=feedback(OP,1);
+Step(CL)
+
+%plot the result of transfer function Y(z)/R(z)
+% roots: zero at -0.9730 & poles at 0.908+0.144i,0.908-0.144i
+num=0.2*[1 -0.9346];
+den=[1 -1.8 0.813];
+sys=tf(num,den,T);
+step(sys);
+
+Motor Voltage M-File:
+%plot the result of transfer function V(z)/R(z)
+numV=sysK;
+denV=1+(sysK*sysG);
+T=1;
+V=tf(numV,denV,T);
+ 
+V=feedback(sysK,sysG);
+step(V);
+stepinfo(V);
+
+# Closed Loop System Simulation M-File (State Space)
+%The Matlab Command of Pitch Matrices:
+T=0.285;
+sysp=zpk([0.856+0.4356j  0.856-0.4356j],[0.816  1],0.01061,T);
+sys_c=ss(sysp);
+[AP,BP,CP,DP]=ssdata(sys_c);
+
+%Matlab Command for Yaw Matrices:
+T=0.285;
+sysy=zpk([0.926 0.9346],[1 -0.9746],0.679,T);
+sys_d=ss(sysy);
+[AY, BY, CY, DY]=ssdata(sys_d);
+
+%Matlab Command for Plant Matrices:
+T=0.285;
+F=[0 1 0 0;-2.7451 -0.2829 0 0;0 0 0 1;0 0 0 -0.2701];
+G=[0 0;37.2021 3.5306;0 0;2.3892 7.461];
+H=[1 0 0 0;0 0 1 0];
+I=[0 0;0 0];
+sys=ss(F,G,H,I);
+sys_g=c2d(sys,T,'zoh');
+[A,B,C,D]=ssdata(sys_g);
