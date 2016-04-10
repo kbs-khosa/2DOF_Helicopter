@@ -1,0 +1,49 @@
+# MATALB code will have three parts each for the pitch and yaw controller and finally for the overall system
+# Pitch Controller M-File
+numG=37.2021;
+denG=[1 0.283 2.7452];
+G=tf(numG,denG);
+T=0.285;
+%Definition of G(s)
+sysG=c2d(G,T);
+% G(z)
+% roots: zero at -0.9730 & poles at 0.856+0.4356i,0.856-0.4356i
+ 
+% K(z)
+% roots: zero at 0.856+0.4356i,0.856-0.4356i & poles at 0.816,1
+% Open loop transfer function G(z)*K(z)
+% roots: zero at -0.9730 & poles at 0.849,1
+numSG=1.444*[1 0.9730];
+denSG=[1 -1.712 0.9225];
+numK=0.01061*denSG;
+denK=[1 -1.816 0.816];
+sysK=tf(numK,denK,T);
+OP=0.01061*tf(numSG,denK,T);
+ 
+%Root locus plot
+rlocus(OP);
+ 
+%Open loop transfer function
+% roots: zero at -0.9730 & poles at 0.908+0.144i,0.908-0.144i
+CL=feedback(OP,1);
+Step(CL)
+
+%plot the result of transfer function Y(z)/R(z)
+% roots: zero at -0.9730 & poles at 0.908+0.144i,0.908-0.144i
+num=[0.0153 0.0149];
+den=[1 -1.8007 0.8309];
+sys=tf(num,den,T);
+step(sys);
+
+Motor Voltage M-File:
+%plot the result of transfer function V(z)/R(z)
+% roots: zero at -0.9730 & poles at 0.908+0.144i,0.908-0.144i
+numV=sysK;
+denV=1+(sysK*sysG);
+T=1;
+V=tf(numV,denV,T);
+ 
+V=feedback(sysK,sysG);
+step(V);
+stepinfo(V)
+
