@@ -1,4 +1,4 @@
-# MATALB code will have three parts each for the pitch and yaw controller and finally for the overall system
+# MATALB code had three parts each for the pitch and yaw controller and finally for the overall system
 # Pitch Controller M-File
 numG=37.2021;
 denG=[1 0.283 2.7452];
